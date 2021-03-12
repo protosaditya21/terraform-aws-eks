@@ -286,7 +286,8 @@ variable "cluster_endpoint_public_access_cidrs" {
 variable "manage_cluster_iam_resources" {
   description = "Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified."
   type        = bool
-  default     = true
+  #default     = true   ### changed by aditya
+  default     = false
 }
 
 variable "cluster_iam_role_name" {
