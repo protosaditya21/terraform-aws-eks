@@ -115,8 +115,8 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
   to_port                  = 443
   type                     = "ingress"
 }
-
-resource "aws_iam_role" "cluster" {
+# resource "aws_iam_role" "cluster" {
+resource "aws_iam_role" "cluster_iam_role_name" {
   count                 = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   name_prefix           = var.cluster_name
   assume_role_policy    = data.aws_iam_policy_document.cluster_assume_role_policy.json
