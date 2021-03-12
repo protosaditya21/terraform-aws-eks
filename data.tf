@@ -147,10 +147,34 @@ data "template_file" "launch_template_userdata" {
   )
 }
 
-#data "aws_iam_role" "custom_cluster_iam_role" {
-#  #count = var.manage_cluster_iam_resources ? 0 : 1
-#  name  = var.cluster_iam_role_name
-#}
+resource "aws_iam_role" "cluster_iam_role_name" {
+  name = var.cluster_iam_role_name
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  tags = {
+    tag-key = "tag"
+  }
+}
+
+data "aws_iam_role" "custom_cluster_iam_role" {
+  count = var.manage_cluster_iam_resources ? 0 : 1
+  name  = var.cluster_iam_role_name
+}
 
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
