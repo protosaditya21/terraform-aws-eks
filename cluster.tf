@@ -121,7 +121,7 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 # resource "aws_iam_role" "cluster" {
 resource "aws_iam_role" "cluster" {
   name                  = var.cluster_iam_role_name
-  #count                 = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  count                 = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   name_prefix           = var.cluster_name
   assume_role_policy    = data.aws_iam_policy_document.cluster_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
@@ -131,7 +131,7 @@ resource "aws_iam_role" "cluster" {
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  #count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn  = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
   #role       = local.cluster_iam_role_name
   #role       = [aws_iam_role.cluster.name]
@@ -143,7 +143,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
-  #count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn  = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
   #role       = local.cluster_iam_role_name
   role        = aws_iam_role.cluster.name
@@ -154,7 +154,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControllerPolicy" {
-  #count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn  = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
   #role       = local.cluster_iam_role_name
   role        = aws_iam_role.cluster.name
