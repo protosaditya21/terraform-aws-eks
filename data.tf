@@ -172,8 +172,12 @@ resource "aws_iam_role" "cluster_iam_role_name" {
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
-  count = var.manage_cluster_iam_resources ? 0 : 1
+  count = var.manage_cluster_iam_resources == false ? 0 : 1
   name  = var.cluster_iam_role_name
+
+  depends_on = [
+    aws_iam_role.cluster_iam_role_name,
+  ]
 }
 
 
