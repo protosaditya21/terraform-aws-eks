@@ -293,7 +293,7 @@ variable "manage_cluster_iam_resources" {
 variable "cluster_iam_role_name" {
   description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false. Set this to reuse an existing IAM role."
   type        = string
-  default     = "jbl-ems-stg-eks-cluster-role"
+  default     = ""
 }
 
 variable "manage_worker_iam_resources" {
