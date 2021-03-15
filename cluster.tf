@@ -132,10 +132,10 @@ resource "aws_iam_role" "cluster" {
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   #count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
+  policy_arn  = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
   #role       = local.cluster_iam_role_name
   #role       = [aws_iam_role.cluster.name]
-  roles      = ["${aws_iam_role.cluster.name}"]
+  role        = aws_iam_role.cluster.name
   
   depends_on = [
     aws_iam_role.cluster,
@@ -146,7 +146,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   #count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn  = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
   #role       = local.cluster_iam_role_name
-  roles       = ["${aws_iam_role.cluster.name}"]
+  role        = aws_iam_role.cluster.name
   
   depends_on = [
     aws_iam_role.cluster,
@@ -157,7 +157,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControlle
   #count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn  = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
   #role       = local.cluster_iam_role_name
-  roles       = ["${aws_iam_role.cluster.name}"]
+  role        = aws_iam_role.cluster.name
   
   depends_on = [
     aws_iam_role.cluster,
