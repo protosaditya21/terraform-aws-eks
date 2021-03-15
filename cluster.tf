@@ -10,9 +10,7 @@ resource "aws_eks_cluster" "this" {
   count                     = var.create_eks ? 1 : 0
   name                      = var.cluster_name
   enabled_cluster_log_types = var.cluster_enabled_log_types
-  #role_arn                  = local.cluster_iam_role_arn
-  role_arn                  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.cluster_iam_role_name}"
-  #role_arn                  = data.aws_iam_role.cluster.arn
+  role_arn                  = local.cluster_iam_role_arn
   version                   = var.cluster_version
   tags                      = var.tags
 
@@ -50,6 +48,9 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy,
+    aws_iam_role_policy_attachment.cluster-AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.cluster-AmazonEKSVPCResourceController,
+    aws_iam_role_policy_attachment.cluster-AmazonEKSServicePolicy,
     aws_cloudwatch_log_group.this,
     aws_iam_role.cluster
   ]
@@ -118,9 +119,9 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
   to_port                  = 443
   type                     = "ingress"
 }
+/*
 # resource "aws_iam_role" "cluster" {
 resource "aws_iam_role" "cluster" {
-  name                  = var.cluster_iam_role_name
   count                 = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   name_prefix           = var.cluster_name
   assume_role_policy    = data.aws_iam_policy_document.cluster_assume_role_policy.json
@@ -129,39 +130,60 @@ resource "aws_iam_role" "cluster" {
   force_detach_policies = true
   tags                  = var.tags
 }
+*/
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  policy_arn  = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" ####"${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
-  role        = local.cluster_iam_role_name
-  #role       = [aws_iam_role.cluster.name]
-  #role        = aws_iam_role.cluster[0].name
-  
-  depends_on = [
-    aws_iam_role.cluster,
+### Create IAM role for EKS cluster
+resource "aws_iam_role" "cluster" {
+  name = "eks-cluster-role"
+
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
   ]
+}
+POLICY
+}
+/*
+resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
+  role       = local.cluster_iam_role_name
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
-  count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  policy_arn  = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"   ### "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
-  role        = local.cluster_iam_role_name
-  #role        = aws_iam_role.cluster[0].name
-  
-  depends_on = [
-    aws_iam_role.cluster,
-  ]
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
+  role       = local.cluster_iam_role_name
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControllerPolicy" {
-  count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  policy_arn  = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"  ####"${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
-  role        = local.cluster_iam_role_name
-  #role        = aws_iam_role.cluster[0].name
-  
-  depends_on = [
-    aws_iam_role.cluster,
-  ]
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
+  role       = local.cluster_iam_role_name
+}
+*/
+
+resource "aws_iam_role_policy_attachment" "cluster-AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.cluster.name
+}
+
+resource "aws_iam_role_policy_attachment" "cluster-AmazonEKSServicePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.cluster.name
+}
+
+resource "aws_iam_role_policy_attachment" "cluster-AmazonEKSVPCResourceController" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  role       = aws_iam_role.cluster.name
 }
 
 /*
