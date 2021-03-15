@@ -10,7 +10,8 @@ resource "aws_eks_cluster" "this" {
   count                     = var.create_eks ? 1 : 0
   name                      = var.cluster_name
   enabled_cluster_log_types = var.cluster_enabled_log_types
-  role_arn                  = local.cluster_iam_role_arn
+  #role_arn                  = local.cluster_iam_role_arn
+  role_arn                  = "arn:aws:iam::518502915645:role/jbl-ems-stg-eks-cluster-role"
   version                   = var.cluster_version
   tags                      = var.tags
 
