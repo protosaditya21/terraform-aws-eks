@@ -135,7 +135,7 @@ resource "aws_iam_role" "cluster" {
 
 ### Create IAM role for EKS cluster
 resource "aws_iam_role" "cluster" {
-  name = "eks-cluster-role"
+  name = "jbl-ems-stg-eks-cluster-role"
 
   assume_role_policy = <<POLICY
 {
