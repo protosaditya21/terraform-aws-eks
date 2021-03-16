@@ -214,7 +214,8 @@ variable "wait_for_cluster_cmd" {
 variable "wait_for_cluster_interpreter" {
   description = "Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy."
   type        = list(string)
-  default     = ["/bin/sh", "-c"]
+  #default     = ["/bin/sh", "-c"]   #### ["C:\Program Files\Git\bin\sh.exe", "-c"]
+  default     = ["C:/Program Files/Git/bin/sh.exe", "-c"]
 }
 
 variable "cluster_create_security_group" {
